@@ -1,0 +1,532 @@
+<!DOCTYPE html> <!-- Documento HTML5 -->
+<html lang="es"> <!-- Idioma principal: español -->
+<head>
+  <meta charset="UTF-8"> <!-- Soporta acentos y símbolos -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive -->
+  <title>Mi sitio musical</title> <!-- Título de la pestaña -->
+
+  <style>
+    /* ====== Estilos base ====== */
+    :root {
+      /* Variables simples para personalización rápida */
+      --bg: #f4f4f4;
+      --text: #222;
+      --primary: #007bff;
+      --success: #28a745;
+      --danger: #dc3545;
+      --card: #fff;
+      --shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ====== Encabezado dinámico ====== */
+    header {
+      text-align: center;
+      background: #333;
+      color: #fff;
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    marquee { font-weight: bold; }
+
+    /* Pollo con animación */
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .chicken {
+      width: 110px;
+      margin-top: 8px;
+      animation: bounce 2s infinite;
+    }
+
+    /* ====== Contenedores ====== */
+    .container {
+      max-width: 960px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .title {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    /* ====== Bloque de canción / video local ====== */
+    .song-block {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .play-button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+    .play-button:hover { opacity: 0.9; }
+
+    .download {
+      background: var(--success);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      display: inline-block;
+    }
+    .download:hover { opacity: 0.9; }
+
+    /* ====== YouTube: pegar URL y búsqueda ====== */
+    .youtube-section {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .youtube-section input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .youtube-section button {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: var(--primary);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .results {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .result-item {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+    .result-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .action {
+      background: #555;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    /* ====== Afiliados y anuncios ====== */
+    .affiliate-section a {
+      display: inline-block;
+      margin-right: 10px;
+      margin-bottom: 8px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .ad-slot {
+      background: #fafafa;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      color: #666;
+    }
+
+    /* ====== Panel de configuración (admin) ====== */
+    .settings {
+      display: grid;
+      gap: 10px;
+    }
+    .settings label { font-weight: bold; }
+    .settings input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .save-btn {
+      background: var(--success);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: pointer;
+      width: fit-content;
+    }
+
+    /* ====== Mensajes de error/estado ====== */
+    .banner {
+      display: none;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .banner.error {
+      display: block;
+      background: #ffe6e6;
+      color: #a40000;
+      border: 1px solid #ffb3b3;
+    }
+    .banner.info {
+      display: block;
+      background: #e6f0ff;
+      color: #003a99;
+      border: 1px solid #b3d1ff;
+    }
+
+    iframe { width: 100%; max-width: 560px; }
+    video { width: 100%; border-radius: 8px; }
+    audio { width: 100%; }
+  </style>
+</head>
+
+<body>
+  <!-- ====== Encabezado con texto animado y pollo músical ====== -->
+  <header>
+    <marquee behavior="scroll" direction="left" scrollamount="6">🎵 Bienvenido: escucha, aprende y apoya a los creadores 🎵</marquee>
+    <img class="chicken" src="https://copilot.microsoft.com/th/id/BCO.87dccc30-875a-4bc8-bec3-e18177948999.png" alt="Pollo escuchando música">
+  </header>
+
+  <main class="container">
+    <!-- ====== Mensajería de estado/errores ====== -->
+    <div id="banner" class="banner"></div>
+
+    <!-- ====== Bloque único de canción y video local ====== -->
+    <section class="card">
+      <h2 class="title">🎶 Canción local de prueba</h2>
+      <div class="song-block">
+        <!-- Audio local con control por botón -->
+        <audio id="audio1" controls src="musica/cancion1.mp3"></audio>
+        <button class="play-button" data-audio="audio1">▶️ Reproducir Música</button>
+
+        <!-- Video local -->
+        <video id="video1" controls src="videos/cancion1.mp4"></video>
+
+        <!-- Descarga del video local -->
+        <a class="download" href="videos/cancion1.mp4" download>⬇️ Descargar Video MP4</a>
+      </div>
+    </section>
+
+    <!-- ====== YouTube: embeber por URL + búsqueda por API ====== -->
+    <section class="card">
+      <h2 class="title">📺 YouTube: ver videos legalmente</h2>
+
+      <!-- Pegar enlace de YouTube para embeber -->
+      <div class="youtube-section">
+        <input type="text" id="youtube-url" placeholder="Pega aquí el enlace de YouTube (watch?v=...)">
+        <button id="btn-embed">Cargar Video</button>
+      </div>
+      <div style="margin-top:10px;">
+        <iframe id="youtube-frame" height="315" src="" title="YouTube player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+
+      <!-- Búsqueda mediante API de YouTube -->
+      <div class="card" style="margin-top:12px;">
+        <h3 class="title">🔍 Buscar en YouTube (API oficial)</h3>
+        <div class="youtube-section">
+          <input type="text" id="search-query" placeholder="Buscar videos (ej. Maná - Clavado en un bar)">
+          <button id="btn-search">Buscar</button>
+        </div>
+        <div id="search-results" class="results"></div>
+        <p style="font-size:12px;color:#666;margin-top:8px;">
+          La búsqueda utiliza YouTube Data API v3 con cuotas y permisos estándar.
+        </p>
+      </div>
+    </section>
+
+    <!-- ====== Afiliados (breve) ====== -->
+    <section class="card affiliate-section">
+      <h2 class="title">🛍️ Recomendaciones tecnológicas</h2>
+      <p>Apoya el proyecto comprando desde nuestros enlaces de afiliado.</p>
+      <a href="https://www.amazon.com/dp/B08XYZ123?tag=TU_ID_AFILIADO" target="_blank">🎧 Audífonos inalámbricos</a>
+      <a href="https://www.amazon.com/dp/B09ABC456?tag=TU_ID_AFILIADO" target="_blank">⌚ Smartwatch</a>
+      <div class="ad-slot">Espacio para anuncios (ej. AdSense o banners propios)</div>
+    </section>
+
+    <!-- ====== Sección legal y propósito ====== -->
+    <section class="card">
+      <h2 class="title">📄 Legal y propósito</h2>
+      <p>
+        Este sitio integra videos mediante el reproductor oficial de YouTube y muestra información usando su API.
+        No alojamos ni distribuimos copias de contenido protegido sin autorización. Las compras se realizan
+        directamente en Amazon usando enlaces de afiliados; podemos recibir una comisión por cada venta.
+        Nuestro propósito es educativo y de recomendación tecnológica/musical, apoyando a los creadores y respetando sus derechos.
+      </p>
+      <p style="font-size:12px;color:#666;">
+        Para usar la API: crea un proyecto en Google Cloud, habilita YouTube Data API v3 y obtén tu clave (API key) u OAuth según el caso.
+      </p>
+    </section>
+
+    <!-- ====== Panel de configuración (admin) ====== -->
+    <section class="card">
+      <h2 class="title">⚙️ Configuración (admin)</h2>
+      <div class="settings">
+        <label for="cfg-affiliate">ID de afiliado de Amazon:</label>
+        <input id="cfg-affiliate" type="text" placeholder="TU_ID_AFILIADO">
+
+        <label for="cfg-youtube-key">Clave de API de YouTube (Data API v3):</label>
+        <input id="cfg-youtube-key" type="text" placeholder="AIza...">
+
+        <label for="cfg-ads">Código de anuncios (HTML):</label>
+        <input id="cfg-ads" type="text" placeholder="<script>...</script> o código de banner">
+
+        <button id="btn-save" class="save-btn">Guardar configuración</button>
+      </div>
+      <p style="font-size:12px;color:#666;margin-top:8px;">
+        Nota: los anuncios mostrados en el reproductor de YouTube pertenecen a YouTube.
+        Para ingresos publicitarios en tu sitio, integra redes como AdSense en tus propios espacios de anuncio.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    /* ============================================================
+       CONFIGURACIÓN BÁSICA (editable por admin)
+       - Almacena ajustes en localStorage para persistencia simple
+       ============================================================ */
+    const config = {
+      affiliateId: localStorage.getItem('affiliateId') || 'TU_ID_AFILIADO',
+      youtubeApiKey: localStorage.getItem('youtubeApiKey') || '',
+      adHtml: localStorage.getItem('adHtml') || ''
+    };
+
+    // Aplicar ID de afiliado a enlaces al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.affiliate-section a').forEach(a => {
+        try {
+          const url = new URL(a.href);
+          // Si ya tiene ?tag=, lo reemplaza; si no, lo agrega.
+          if (url.searchParams.has('tag')) {
+            url.searchParams.set('tag', config.affiliateId);
+          } else {
+            url.searchParams.append('tag', config.affiliateId);
+          }
+          a.href = url.toString();
+        } catch (e) { /* Ignora enlaces inválidos en dev */ }
+      });
+
+      // Insertar HTML de anuncios si existe
+      if (config.adHtml) {
+        const slot = document.querySelector('.ad-slot');
+        slot.innerHTML = config.adHtml;
+      }
+    });
+
+    /* ============================================================
+       GUARDAR CONFIGURACIÓN (admin)
+       ============================================================ */
+    document.getElementById('btn-save').addEventListener('click', () => {
+      const aff = document.getElementById('cfg-affiliate').value.trim();
+      const key = document.getElementById('cfg-youtube-key').value.trim();
+      const ads = document.getElementById('cfg-ads').value.trim();
+
+      if (aff) localStorage.setItem('affiliateId', aff);
+      if (key) localStorage.setItem('youtubeApiKey', key);
+      if (ads) localStorage.setItem('adHtml', ads);
+
+      showBanner('Configuración guardada correctamente.', 'info');
+      setTimeout(() => location.reload(), 800);
+    });
+
+    /* ============================================================
+       BOTÓN PLAY/PAUSE PARA AUDIO LOCAL
+       ============================================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      const botones = document.querySelectorAll('.play-button');
+      botones.forEach(boton => {
+        boton.addEventListener('click', function () {
+          const audioId = this.getAttribute('data-audio');
+          const audio = document.getElementById(audioId);
+
+          // Pausar otros audios (si agregas más bloques en el futuro)
+          document.querySelectorAll('audio').forEach(a => { if (a !== audio) a.pause(); });
+
+          // Intentar reproducir
+          audio.play().then(() => {
+            this.textContent = '⏸️ Pausar Música';
+          }).catch(err => {
+            // Autoplay bloqueado o archivo inválido
+            explainError('AUDIO_PLAY_ERROR', err);
+            this.textContent = '▶️ Reproducir Música';
+          });
+
+          // Restaurar al finalizar
+          audio.addEventListener('ended', () => {
+            this.textContent = '▶️ Reproducir Música';
+          });
+        });
+      });
+    });
+
+    /* ============================================================
+       EMBED POR URL DE YOUTUBE
+       ============================================================ */
+    document.getElementById('btn-embed').addEventListener('click', () => {
+      const url = document.getElementById('youtube-url').value.trim();
+      const id = extractVideoId(url);
+      if (!id) {
+        explainError('YOUTUBE_URL_INVALID');
+        return;
+      }
+      // Embeber de forma legal (no descarga)
+      document.getElementById('youtube-frame').src = `https://www.youtube.com/embed/${id}`;
+      showBanner('Video cargado en el reproductor oficial de YouTube.', 'info');
+    });
+
+    /* ============================================================
+       BÚSQUEDA CON YOUTUBE DATA API v3
+       - Requiere apiKey válida y cuotas disponibles
+       ============================================================ */
+    document.getElementById('btn-search').addEventListener('click', async () => {
+      const q = document.getElementById('search-query').value.trim();
+      const apiKey = localStorage.getItem('youtubeApiKey') || '';
+      if (!apiKey) {
+        explainError('YOUTUBE_API_KEY_MISSING');
+        return;
+      }
+      if (!q) {
+        explainError('SEARCH_QUERY_EMPTY');
+        return;
+      }
+
+      const endpoint = 'https://www.googleapis.com/youtube/v3/search';
+      const params = new URLSearchParams({
+        part: 'snippet',
+        q,
+        type: 'video',
+        maxResults: '5',
+        key: apiKey
+      });
+
+      try {
+        const res = await fetch(`${endpoint}?${params.toString()}`);
+        if (!res.ok) {
+          const txt = await res.text();
+          explainError('YOUTUBE_API_ERROR', txt);
+          return;
+        }
+        const data = await res.json();
+        renderResults(data.items || []);
+      } catch (err) {
+        explainError('NETWORK_ERROR', err);
+      }
+    });
+
+    /* ============================================================
+       RENDERIZAR RESULTADOS DE BÚSQUEDA
+       ============================================================ */
+    function renderResults(items) {
+      const box = document.getElementById('search-results');
+      box.innerHTML = '';
+      if (!items.length) {
+        showBanner('No se encontraron resultados.', 'info');
+        return;
+      }
+
+      items.forEach(it => {
+        const vid = it.id && it.id.videoId ? it.id.videoId : null;
+        const title = it.snippet && it.snippet.title ? it.snippet.title : 'Video';
+        const thumb = it.snippet && it.snippet.thumbnails && it.snippet.thumbnails.default ? it.snippet.thumbnails.default.url : '';
+
+        const div = document.createElement('div');
+        div.className = 'result-item';
+        div.innerHTML = `
+          <div style="display:flex; align-items:center; gap:10px;">
+            ${thumb ? `<img src="${thumb}" alt="Miniatura" style="width:120px;border-radius:6px;">` : ''}
+            <div>
+              <div style="font-weight:bold;">${title}</div>
+              <div style="font-size:12px;color:#666;">ID: ${vid || 'N/A'}</div>
+            </div>
+          </div>
+          <div class="result-actions">
+            <button class="action" ${vid ? `onclick="embedId('${vid}')"` : 'disabled'}>Ver aquí</button>
+            <a class="action" ${vid ? `href="https://www.youtube.com/watch?v=${vid}" target="_blank"` : 'disabled'}>Ver en YouTube</a>
+          </div>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    function embedId(id) {
+      if (!id) return;
+      document.getElementById('youtube-frame').src = `https://www.youtube.com/embed/${id}`;
+      showBanner('Video embebido correctamente.', 'info');
+    }
+
+    /* ============================================================
+       UTILIDADES: extraer ID, banners y explicación de errores
+       ============================================================ */
+    function extractVideoId(url) {
+      const regex = /(?:youtube\.com\/.*[?&]v=|youtu\.be\/)([^&?/]+)/;
+      const match = url.match(regex);
+      return match ? match[1] : null;
+    }
+
+    function showBanner(message, kind = 'error') {
+      const b = document.getElementById('banner');
+      b.className = `banner ${kind}`;
+      b.textContent = message;
+      b.style.display = 'block';
+      // Ocultar después de unos segundos
+      setTimeout(() => { b.style.display = 'none'; }, 4000);
+    }
+
+    // Mapa de errores comunes con mensajes pedagógicos
+    function explainError(code, extra) {
+      const messages = {
+        'YOUTUBE_URL_INVALID': 'El enlace no es válido. Usa una URL con watch?v=... o youtu.be/ID.',
+        'YOUTUBE_API_KEY_MISSING': 'Falta la clave de API de YouTube. Agrega tu API key en Configuración.',
+        'SEARCH_QUERY_EMPTY': 'Escribe un término de búsqueda para continuar.',
+        'YOUTUBE_API_ERROR': 'La API de YouTube respondió con un error (cuota agotada, clave inválida o permisos insuficientes).',
+        'NETWORK_ERROR': 'Problema de conexión. Revisa tu internet e inténtalo de nuevo.',
+        'AUDIO_PLAY_ERROR': 'No se pudo reproducir el audio: puede ser formato/codec no soportado o bloqueo de reproducción automática.',
+        'COPYRIGHT_BLOCK': 'Este video tiene restricciones por derechos de autor; no se puede descargar desde este sitio. Puedes verlo en YouTube.',
+      };
+
+      const base = messages[code] || 'Ocurrió un error inesperado.';
+      const more = extra ? ` Detalle: ${String(extra).slice(0, 160)}...` : '';
+      showBanner(`${base}${more}`, 'error');
+    }
+
+    /* ============================================================
+       RECORDATORIO LEGAL:
+       - El embed y la API muestran y consultan contenido respetando derechos.
+       - No implementamos descarga de YouTube por restricciones legales.
+       - Para monetizar anuncios en tu sitio, usa AdSense u otra red en tus espacios.
+       - Los anuncios del reproductor de YouTube se administran por YouTube/creadores.
+       ============================================================ */
+  </script>
+</body>
+</html>
